@@ -5,4 +5,6 @@ matplotlib
 seaborn
 openpyxl
 scikit-learn
-pmdarima
+numpy==1.23.5  # O una versión un poco más antigua de numpy
+cython         # Añadir Cython explícitamente
+pmdarima==2.0.3 # O la versión más reciente que sepas que es estable (ej. 2.0.4)
