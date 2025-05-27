@@ -281,9 +281,65 @@ if st.session_state.get('modelo_ejecutado_info') and st.session_state.get('forec
         else: st.warning("No se pudo generar el gráfico del pronóstico.")
 
         st.markdown("##### Valores del Pronóstico"); st.dataframe(df_pronostico_final_v41.style.format("{:.2f}"))
-        excel_data_final_v41 = to_excel(df_pronostico_final_v41)
-        dl_key_final_v41 = f"dl_fc_simple_{info_modelo_final_v41['name'][:10].replace(' ','_')}_v4_1" # Key única
-        st.download_button(f"📥 Descargar ({info_modelo_final_v41['name']})", excel_data_final_v41, f"pronostico_{target_col_for_results_v41}.xlsx", key=dl_key_final_v41)
+# Generación de Excel con gráfico y recomendaciones
+output = BytesIO()
+with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+    # 1) Escribir pronóstico
+    df_pronostico_final_v41.to_excel(writer, sheet_name='Pronóstico', index=True, startrow=0)
+    wb = writer.book
+    ws = writer.sheets['Pronóstico']
+
+    # 2) Insertar gráfico de línea
+    chart = wb.add_chart({'type':'line'})
+    rows = len(df_pronostico_final_v41)
+    chart.add_series({
+        'name': info_modelo_final_v41['name'],
+        'categories': ['Pronóstico', 1, 0, rows, 0],
+        'values': ['Pronóstico', 1, 1, rows, 1],
+        'marker': {'type':'circle','size':4},
+    })
+    chart.set_title({'name': f"Pronóstico ({info_modelo_final_v41['name']}) a {st.session_state.forecast_horizon} periodos"})
+    chart.set_x_axis({'name':'Fecha'})
+    chart.set_y_axis({'name': target_col_for_results_v41})
+    ws.insert_chart('D2', chart, {'x_scale':1.2, 'y_scale':1.2})
+
+    # 3) Información adicional
+    start = rows + 3
+    info_lines = [
+        "Informe: Asistente de Pronósticos PRO v4.1",
+        f"Fecha: {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M')}",
+        f"Modelo: {info_modelo_final_v41['name']}",
+        f"Horizonte: {st.session_state.forecast_horizon}"
+    ]
+    for i, line in enumerate(info_lines):
+        ws.write(start + i, 0, line)
+
+    # 4) Recomendaciones
+    reco_text = recommendations.generate_recommendations_simple(
+        selected_model_name=info_modelo_final_v41['name'],
+        data_diag_summary=st.session_state.data_diagnosis_report,
+        has_pis=(pi_df_plot_final_v41 is not None and not pi_df_plot_final_v41.empty),
+        target_column_name=target_col_for_results_v41,
+        model_rmse=info_modelo_final_v41.get('rmse'),
+        model_mae=info_modelo_final_v41.get('mae'),
+        forecast_horizon=st.session_state.forecast_horizon,
+        model_params=info_modelo_final_v41.get('model_params')
+    )
+    reco_lines = reco_text.split("\n")
+    rec_start = start + len(info_lines) + 2
+    ws.write(rec_start, 0, "Recomendaciones:")
+    for j, line in enumerate(reco_lines):
+        ws.write(rec_start + 1 + j, 0, line)
+
+# 5) Botón de descarga
+output.seek(0)
+st.download_button(
+    "⬇️ Descargar Excel completo",
+    data=output.getvalue(),
+    file_name=f"pronostico_{target_col_for_results_v41}.xlsx",
+    mime="application/vnd.openxmlformats-officedocument-spreadsheetml.sheet"
+)
+  )1}.xlsx", key=dl_key_final_v41)
         st.markdown("---")
         st.subheader("💡 Recomendaciones y Próximos Pasos")
         st.markdown(recommendations.generate_recommendations_simple( 
