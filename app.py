@@ -57,7 +57,7 @@ def sugerir_tipo_modelo_simple(serie_procesada, auto_seasonal_period=1):
         return "N/A", "No hay datos suficientes para analizar y sugerir un modelo.", []
     sugerencias_log = []; modelo_sugerido_tipo = "SES" 
     explicacion = "Para series cortas o sin patrones claros, SES es un buen punto de partida."
-if len(serie_procesada) < 15:
+    if len(serie_procesada) < 15:
         explicacion = "Datos muy limitados. Se sugiere un modelo baseline simple: SES."
         sugerencias_log.append("Datos muy limitados.")
         return "SES", explicacion, sugerencias_log
