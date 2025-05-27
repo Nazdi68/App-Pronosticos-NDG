@@ -109,7 +109,7 @@ def prepare_forecast_display_data(model_data, series_full_idx, horizon):
     return final_export_df, forecast_series_for_plot, pi_display_df
 
 # --- Interfaz de Usuario ---
-st.title("🔮 Asistente de Pronósticos (Versión Simplificada)")
+st.title("🔮 Asistente de Pronósticos 1")
 st.markdown("Herramienta guiada para generar pronósticos de series de tiempo.")
 
 st.sidebar.header("1. Carga y Preprocesamiento")
