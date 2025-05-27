@@ -314,3 +314,4 @@ elif st.session_state.get('df_loaded') is not None and \
          st.info("Datos preprocesados. Configure el horizonte y haga clic en 'Generar Pronóstico'.")
 
 st.sidebar.markdown("---"); st.sidebar.info("Asistente de Pronósticos PRO v4.1") # Actualizada la versión
+# prueba
