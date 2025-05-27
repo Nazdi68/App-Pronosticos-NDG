@@ -57,9 +57,10 @@ def sugerir_tipo_modelo_simple(serie_procesada, auto_seasonal_period=1):
         return "N/A", "No hay datos suficientes para analizar y sugerir un modelo.", []
     sugerencias_log = []; modelo_sugerido_tipo = "SES" 
     explicacion = "Para series cortas o sin patrones claros, SES es un buen punto de partida."
-    if len(serie_procesada) < 15:
-        explicacion = "Datos muy limitados. Se sugiere un modelo baseline simple. La aplicación intentará con SES."
-        sugerencias_log.append("Datos muy limitados."); return "SES o Baselines", explicacion, sugerencias_log
+if len(serie_procesada) < 15:
+        explicacion = "Datos muy limitados. Se sugiere un modelo baseline simple: SES."
+        sugerencias_log.append("Datos muy limitados.")
+        return "SES", explicacion, sugerencias_log
     tiene_tendencia_visible = False; tiene_estacionalidad_visible = False
     if len(serie_procesada) >= 20: 
         primera_mitad_mean = serie_procesada.iloc[:len(serie_procesada)//2].mean()
