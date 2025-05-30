@@ -335,7 +335,6 @@ st.download_button(
     mime      = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
 
-1}.xlsx", key=dl_key_final_v41)
         st.markdown("---")
         st.subheader("💡 Recomendaciones y Próximos Pasos")
         st.markdown(recommendations.generate_recommendations_simple( 
