@@ -336,19 +336,17 @@ st.download_button(
 )
 
 st.markdown("---")
-    st.subheader("💡 Recomendaciones y Próximos Pasos")
-    st.markdown(
-        recommendations.generate_recommendations_simple(
-            selected_model_name=info_modelo_final_v41['name'],
-            data_diag_summary=st.session_state.data_diagnosis_report,
-            has_pis=(pi_df_plot_final_v41 is not None and not pi_df_plot_final_v41.empty),
-            target_column_name=target_col_for_results_v41,
-            model_rmse=info_modelo_final_v41.get('rmse'),
-            model_mae=info_modelo_final_v41.get('mae'),
-            forecast_horizon=st.session_state.forecast_horizon,
-            model_params=info_modelo_final_v41.get('model_params')
-        )
-    )
+st.subheader("💡 Recomendaciones y Próximos Pasos")
+st.markdown(recommendations.generate_recommendations_simple(
+    selected_model_name=info_modelo_final_v41['name'],
+    data_diag_summary=st.session_state.data_diagnosis_report,
+    has_pis=(pi_df_plot_final_v41 is not None and not pi_df_plot_final_v41.empty),
+    target_column_name=target_col_for_results_v41,
+    model_rmse=info_modelo_final_v41.get('rmse'),
+    model_mae=info_modelo_final_v41.get('mae'),
+    forecast_horizon=st.session_state.forecast_horizon,
+    model_params=info_modelo_final_v41.get('model_params')
+     ))
     else:
         st.warning("No se pueden mostrar los resultados del pronóstico porque los datos históricos o la columna objetivo no están disponibles.")
 
