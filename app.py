@@ -28,11 +28,6 @@ def init_session_state_v4_1(): # Renombrado para evitar conflicto si se corre lo
         if key not in st.session_state: st.session_state[key] = value
 init_session_state_v4_1()
 
-# --- Funciones Auxiliares ---
-def to_excel(df):
-    output = BytesIO(); df.to_excel(output, index=True, sheet_name='Pronostico')
-    return output.getvalue()
-
 def reset_on_file_change_v4_1(): # Renombrado
     keys_to_reset = [
         'df_processed', 'selected_date_col', 'selected_value_col', 
@@ -281,22 +276,22 @@ if st.session_state.get('modelo_ejecutado_info') and st.session_state.get('forec
         else: st.warning("No se pudo generar el gráfico del pronóstico.")
 
         st.markdown("##### Valores del Pronóstico"); st.dataframe(df_pronostico_final_v41.style.format("{:.2f}"))
-# Generación de Excel con gráfico y recomendaciones
+# — Generación de Excel con gráfico y recomendaciones —
 output = BytesIO()
 with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-    # 1) Escribir pronóstico
+    # 1) Escribimos el pronóstico
     df_pronostico_final_v41.to_excel(writer, sheet_name='Pronóstico', index=True, startrow=0)
     wb = writer.book
     ws = writer.sheets['Pronóstico']
 
-    # 2) Insertar gráfico de línea
+    # 2) Insertamos gráfico
     chart = wb.add_chart({'type':'line'})
     rows = len(df_pronostico_final_v41)
     chart.add_series({
         'name': info_modelo_final_v41['name'],
         'categories': ['Pronóstico', 1, 0, rows, 0],
-        'values': ['Pronóstico', 1, 1, rows, 1],
-        'marker': {'type':'circle','size':4},
+        'values':     ['Pronóstico', 1, 1, rows, 1],
+        'marker':     {'type':'circle','size':4},
     })
     chart.set_title({'name': f"Pronóstico ({info_modelo_final_v41['name']}) a {st.session_state.forecast_horizon} periodos"})
     chart.set_x_axis({'name':'Fecha'})
@@ -316,14 +311,14 @@ with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
 
     # 4) Recomendaciones
     reco_text = recommendations.generate_recommendations_simple(
-        selected_model_name=info_modelo_final_v41['name'],
-        data_diag_summary=st.session_state.data_diagnosis_report,
-        has_pis=(pi_df_plot_final_v41 is not None and not pi_df_plot_final_v41.empty),
-        target_column_name=target_col_for_results_v41,
-        model_rmse=info_modelo_final_v41.get('rmse'),
-        model_mae=info_modelo_final_v41.get('mae'),
-        forecast_horizon=st.session_state.forecast_horizon,
-        model_params=info_modelo_final_v41.get('model_params')
+        selected_model_name   = info_modelo_final_v41['name'],
+        data_diag_summary     = st.session_state.data_diagnosis_report,
+        has_pis               = (pi_df_plot_final_v41 is not None and not pi_df_plot_final_v41.empty),
+        target_column_name    = target_col_for_results_v41,
+        model_rmse            = info_modelo_final_v41.get('rmse'),
+        model_mae             = info_modelo_final_v41.get('mae'),
+        forecast_horizon      = st.session_state.forecast_horizon,
+        model_params          = info_modelo_final_v41.get('model_params'),
     )
     reco_lines = reco_text.split("\n")
     rec_start = start + len(info_lines) + 2
@@ -335,11 +330,12 @@ with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
 output.seek(0)
 st.download_button(
     "⬇️ Descargar Excel completo",
-    data=output.getvalue(),
-    file_name=f"pronostico_{target_col_for_results_v41}.xlsx",
-    mime="application/vnd.openxmlformats-officedocument-spreadsheetml.sheet"
+    data      = output.getvalue(),
+    file_name = f"pronostico_{target_col_for_results_v41}.xlsx",
+    mime      = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
-  )1}.xlsx", key=dl_key_final_v41)
+
+1}.xlsx", key=dl_key_final_v41)
         st.markdown("---")
         st.subheader("💡 Recomendaciones y Próximos Pasos")
         st.markdown(recommendations.generate_recommendations_simple( 
