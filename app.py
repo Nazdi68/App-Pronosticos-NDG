@@ -347,6 +347,7 @@ st.markdown(recommendations.generate_recommendations_simple(
     forecast_horizon=st.session_state.forecast_horizon,
     model_params=info_modelo_final_v41.get('model_params')
      ))
+
     else:
         st.warning("No se pueden mostrar los resultados del pronóstico porque los datos históricos o la columna objetivo no están disponibles.")
 
